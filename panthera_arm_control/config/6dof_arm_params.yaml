@@ -1,0 +1,16 @@
+robot:
+  name: "Panthera-HT"
+  param_file: "./6dof_panthera_motor_params.yaml"
+  joint_limits:
+    lower: [-2.4, -0.1, -0.1, -1.6, -1.7, -2.5, -1.0]
+    upper: [2.4, 3.2, 4.0, 1.6, 1.7, 2.5, 1.0]
+
+kinematics:
+  joint_names:
+    - "joint1"
+    - "joint2"
+    - "joint3"
+    - "joint4"
+    - "joint5"
+    - "joint6"
+    - "joint7"

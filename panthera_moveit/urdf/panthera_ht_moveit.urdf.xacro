@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panthera_ht_description">
+    <xacro:arg name="config_file" default="$(find panthera_moveit)/config/6dof_arm_params.yaml" />
+    <xacro:arg name="control_mode" default="position_velocity" />
+
+    <!-- Import panthera_ht_description urdf file -->
+    <xacro:include filename="$(find panthera_description)/urdf/panthera_ht_gripper.urdf.xacro" />
+
+    <!-- Import hardware control_xacro -->
+    <xacro:include filename="$(find panthera_moveit)/urdf/panthera_ht_ros2_control.xacro" />
+
+    <!-- Instantiate hardware interface -->
+    <xacro:Panthera-HT_ros2_control
+        name="PantheraHardware"
+        config_file="$(arg config_file)"
+        control_mode="$(arg control_mode)"/>
+
+</robot>
