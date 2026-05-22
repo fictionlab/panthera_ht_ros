@@ -22,12 +22,6 @@ class Panthera : public hightorque_robot::robot
 {
 public:
     /**
-     * @brief 默认构造函数
-     * 使用默认配置文件路径初始化
-     */
-    Panthera();
-
-    /**
      * @brief 构造函数
      * @param config_path 配置文件路径（YAML格式）
      */

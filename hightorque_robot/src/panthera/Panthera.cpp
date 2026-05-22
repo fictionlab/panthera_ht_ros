@@ -11,13 +11,6 @@ namespace panthera
 
 // ==================== 构造函数和析构函数 ====================
 
-Panthera::Panthera() : hightorque_robot::robot(), motor_count_(0), gripper_id_(0)
-{
-    // 使用默认配置文件路径
-    std::string default_config = "../robot_param/Follower.yaml";
-    initialize(default_config);
-}
-
 Panthera::Panthera(const std::string& config_path)
     : hightorque_robot::robot(config_path), motor_count_(0), gripper_id_(0)
 {

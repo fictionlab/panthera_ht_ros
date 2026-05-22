@@ -43,7 +43,6 @@ namespace hightorque_robot
 
         int motor_timeout_ms = 0;
 
-        robot();
         robot(const std::string& config_path);
         ~robot();
 

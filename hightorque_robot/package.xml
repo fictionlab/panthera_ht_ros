@@ -12,7 +12,6 @@
   <depend>libserialport</depend>
   <depend>lcm</depend>
   <depend>yaml-cpp</depend>
-  <depend>ament_index_cpp</depend>
   <depend>panthera_ht_description_with_finger</depend>
 
   <export>

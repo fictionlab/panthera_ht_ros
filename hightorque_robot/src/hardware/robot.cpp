@@ -8,11 +8,6 @@
 
 namespace hightorque_robot
 {
-    robot::robot()
-    {
-        init_robot("../robot_param/robot_config.yaml");
-    }
-
     robot::robot(const std::string& config_path)
     {
         init_robot(config_path);
