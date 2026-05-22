@@ -23,7 +23,7 @@ namespace hightorque_robot
             param_file = config["robot"]["param_file"].as<std::string>();
         }
         
-        // 如果param_file是相对路径，则相对于config_path的目录
+        // If param_file is a relative path, interpret it relative to config_path directory
         if (param_file[0] != '/') {
             size_t last_slash = config_path.find_last_of('/');
             if (last_slash != std::string::npos) {
@@ -69,13 +69,13 @@ namespace hightorque_robot
         {
             cp->puch_motor(&Motors);
         }
-        set_port_motor_num(); // 设置通道上挂载的电机数，并获取主控板固件版本号
+        set_port_motor_num(); // Set number of motors per channel and query mainboard firmware version
         if (slave_v >= COMBINE_VERSION(4, 1, 0))
         {
             canboard_fdcan_reset();
         }
 
-        if (slave_v < COMBINE_VERSION(4, 0, 0))  // 检测电机连接是否正常
+        if (slave_v < COMBINE_VERSION(4, 0, 0))  // Check motor connections for older firmware
         {
             fun_v = fun_v1;
             check_motor_connection_position();   
@@ -218,7 +218,7 @@ namespace hightorque_robot
 
     void robot::detect_motor_limit()
     {
-        // 电机正常运行时检测是否超过限位，停机之后不检测
+        // Check motor limits during normal operation; skip checks after stopping
         if(!motor_position_limit_flag && !motor_torque_limit_flag)
         {
             for (motor *m : Motors)
@@ -270,7 +270,7 @@ namespace hightorque_robot
             } 
             std::cout << "Port: " << name << ", PID: 0x" << std::hex << *pid << ", VID: 0x" << *vid << std::dec << std::endl;
 
-            // 关闭端口
+            // close port
             sp_close(port);
             sp_free_port(port);
         }
@@ -332,7 +332,7 @@ namespace hightorque_robot
             }
             // std::cout << "Port: " << name << ", PID: 0x" << std::hex << pid << ", VID: 0x" << vid << std::dec << std::endl;
 
-            // 关闭端口
+            // free port
             sp_free_port(port);
         }
         catch(const std::exception& e)
@@ -415,10 +415,10 @@ namespace hightorque_robot
     }
 
     typedef enum{
-        error_check = 0,    // 正常
-        error_clear,        // 报错，清理     
-        error_wait_dev,     // 报错，等待设备
-        error_reconnect,    // 报错，重连
+        error_check = 0,    // normal
+        error_clear,        // error: clear
+        error_wait_dev,     // error: wait for device
+        error_reconnect,    // error: reconnect
     }error_run_state_e;
 
     void robot::check_error(void)
@@ -427,7 +427,7 @@ namespace hightorque_robot
         while(error_check_flag)
         {
             static error_run_state_e last_error_run_state = error_reconnect;
-            static error_run_state_e error_run_state = error_check;// 0：正常，1：报错,清理，2：重连
+            static error_run_state_e error_run_state = error_check; // 0: normal, 1: error_clear, 2: error_wait_dev, 3: error_reconnect
             switch(error_run_state)
             {
                 case 0:
@@ -514,8 +514,8 @@ namespace hightorque_robot
                         // std::thread(&canport::send, &cp);
                         cp->puch_motor(&Motors);
                     }
-                    set_port_motor_num(); // 设置通道上挂载的电机数，并获取主控板固件版本号
-                    check_motor_connection_version();  // 检测电机连接是否正常
+                    set_port_motor_num(); // Set number of motors mounted on each channel and query mainboard firmware version
+                    check_motor_connection_version();  // Check whether motor connections are OK
                     error_run_state = error_check;
                     std::cerr << "\033[1;31mreconnect end\033[0m" << std::endl;
                 }
@@ -527,7 +527,7 @@ namespace hightorque_robot
             std::unique_lock<std::mutex> lock(error_check_mutex);
             if (error_check_cv.wait_for(lock, std::chrono::milliseconds(1000), 
                 [this]{ return !error_check_flag; })) {
-                // 收到退出信号，立即退出
+                // Received exit signal, exit immediately
                 break;
             }
             // only state chaged, print state.
@@ -564,7 +564,7 @@ namespace hightorque_robot
 
 
     /**
-     * @brief 设置每个通道的电机数量，并查询主控板固件版本
+     * @brief Set the number of motors per channel and query the mainboard firmware version
      */
     void robot::set_port_motor_num()
     {

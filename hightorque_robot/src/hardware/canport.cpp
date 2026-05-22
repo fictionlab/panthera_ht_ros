@@ -54,7 +54,7 @@ uint16_t canport::set_motor_num()
     cdc_tr_message.data.data[0] = motor_num;
     
     int t = 0;
-    #define MAX_DALAY 1000  // 单位ms
+    #define MAX_DALAY 1000  // unit: ms
     while (t++ < MAX_DALAY)
     {
         motor_send_cmd();
@@ -372,7 +372,7 @@ void canport::set_fun_v(fun_version v, uint16_t motor_version)
     *(uint16_t *)&cdc_tr_message.data.data[1] = motor_version;
 
     int t = 0;
-    #define MAX_DALAY 1000  // 单位ms
+    #define MAX_DALAY 1000  // unit: ms
     while (t++ < MAX_DALAY)
     {
         motor_send_cmd();

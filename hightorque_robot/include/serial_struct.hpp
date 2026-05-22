@@ -19,44 +19,44 @@
 #define  MODE_TIME_OUT              0x85
 
 #define  MODE_POS_VEL_TQE           0X90
-// #define  MODE_POS_VEL_TQE_KP_KD     0X93  // 将弃用
-// #define  MODE_POS_VEL_TQE_KP_KI_KD  0X98  // 弃用
+// #define  MODE_POS_VEL_TQE_KP_KD     0X93  // Deprecated
+// #define  MODE_POS_VEL_TQE_KP_KI_KD  0X98  // Deprecated
 #define  MODE_POS_VEL_KP_KD         0X9E
-// #define  MODE_POS_VEL_TQE_RKP_RKD   0XA3  // 弃用
-// #define  MODE_POS_VEL_RKP_RKD       0XA8  // 弃用
+// #define  MODE_POS_VEL_TQE_RKP_RKD   0XA3  // Deprecated
+// #define  MODE_POS_VEL_RKP_RKD       0XA8  // Deprecated
 #define  MODE_POS_VEL_ACC           0XAD
 #define  MODE_POS_VEL_TQE_KP_KD_2    0XB0
 
 
-#define  MODE_NULL                  0X00  // 未定义
-#define  MODE_RESET_ZERO            0X01  // 重置电机零位
-#define  MODE_CONF_WRITE            0X02  // 保存设置
-#define  MODE_STOP                  0X03  // 电机停止
-#define  MODE_BRAKE                 0X04  // 电机刹车
-#define  MODE_SET_NUM               0X05  // 设置通道电机数量，并查询固件版本
-#define  MODE_MOTOR_STATE           0X06  // 电机状态
-// #define  MODE_CONF_LOAD             0X07  // 还原设置（弃用）
-#define  MODE_RESET                 0X08  // 电机重启
-// #define  MODE_RUNZERO               0X09  // 上电自动回零
-#define  MODE_MOTOR_STATE2          0X0A  // 电机状态2(带模式和错误码)
-#define  MODE_MOTOR_VERSION         0X0B  // 电机版本号
-#define  MODE_FUN_V                 0X0C  // 设置功能版本号
-#define  MODE_BOOTLOADER            0X0D  // 升级通讯板固件
-#define  MODE_FDCAN_RESET           0X0E  // 重新初始化 FDCAN
-#define  MODE_FDCAN_MOTOR_STATE     0X0F  // 通讯板 FDCAN 报错码 + 电机状态
-#define  MODE_TQE_ADJS_FLAG         0X10  // 电机内部力矩修正（电机固件 v4.6.0 开始支持）
-#define  MODE_FDCAN_MOTOR_STATE2    0X11  // 通讯板 FDCAN 报错码 + 电机状态2(带模式和错误码)
+#define  MODE_NULL                  0X00  // undefined
+#define  MODE_RESET_ZERO            0X01  // reset motor zero position
+#define  MODE_CONF_WRITE            0X02  // save configuration
+#define  MODE_STOP                  0X03  // motor stop
+#define  MODE_BRAKE                 0X04  // motor brake
+#define  MODE_SET_NUM               0X05  // set number of motors per channel and query firmware version
+#define  MODE_MOTOR_STATE           0X06  // motor state
+// #define  MODE_CONF_LOAD             0X07  // restore configuration (deprecated)
+#define  MODE_RESET                 0X08  // motor reboot
+// #define  MODE_RUNZERO               0X09  // run to zero on power-up
+#define  MODE_MOTOR_STATE2          0X0A  // motor state 2 (with mode and fault code)
+#define  MODE_MOTOR_VERSION         0X0B  // motor version
+#define  MODE_FUN_V                 0X0C  // set feature version
+#define  MODE_BOOTLOADER            0X0D  // upgrade communication board firmware
+#define  MODE_FDCAN_RESET           0X0E  // reinitialize FDCAN
+#define  MODE_FDCAN_MOTOR_STATE     0X0F  // communication board FDCAN error codes + motor state
+#define  MODE_TQE_ADJS_FLAG         0X10  // motor internal torque adjustment (supported since motor firmware v4.6.0)
+#define  MODE_FDCAN_MOTOR_STATE2    0X11  // communication board FDCAN error codes + motor state 2 (with mode and fault code)
 
 #define COMBINE_VERSION(major, minor, patch) (((major) << 12) | ((minor) << 4) | (patch))
-#define GET_MAJOR_VERSION(version) (((version) >> 12) & 0xF)  // 提取 major 版本
-#define GET_MINOR_VERSION(version) (((version) >> 4) & 0xFF)  // 提取 minor 版本
-#define GET_PATCH_VERSION(version) ((version) & 0xF)          // 提取 patch 版本
+#define GET_MAJOR_VERSION(version) (((version) >> 12) & 0xF)  // extract major version
+#define GET_MINOR_VERSION(version) (((version) >> 4) & 0xFF)  // extract minor version
+#define GET_PATCH_VERSION(version) ((version) & 0xF)          // extract patch version
 
 typedef enum 
 {
     fun_v1 = 1,  // v3
-    fun_v2,      // v4 电机模式和错误码
-    fun_v3,      // v4 5参数可选电机不响应
+    fun_v2,      // v4: motor mode and fault codes
+    fun_v3,      // v4: optional 5-parameter motors non-responsive
     fun_v4,
     fun_v5,
     fun_v6,
@@ -69,11 +69,11 @@ typedef enum
 
 typedef enum __attribute__((packed))
 {
-    FDCAN_STATUS_UNKNOWN = -1,    // 状态无效
-    FDCAN_STATUS_OK,             // 正常
-    FDCAN_STATUS_ERROR_WARNING,  // 错误警告--位错误、CRC错误、ACK错误、格式错误（可自行恢复）
-    FDCAN_STATUS_ERROR_PASSIVE,  // 被动错误--表现：不在发送，但可接收
-    FDCAN_STATUS_BUS_OFF,        // 总线关闭--表现：不在发送或接收任何数据
+    FDCAN_STATUS_UNKNOWN = -1,    // invalid status
+    FDCAN_STATUS_OK,             // OK
+    FDCAN_STATUS_ERROR_WARNING,  // error warning -- bit errors, CRC, ACK, format errors (recoverable)
+    FDCAN_STATUS_ERROR_PASSIVE,  // error passive -- not transmitting, but can receive
+    FDCAN_STATUS_BUS_OFF,        // bus off -- not transmitting or receiving any data
 } __attribute__((packed)) fdcan_fault_t;
 
 #pragma pack(1)
@@ -136,9 +136,9 @@ typedef struct
 
 typedef struct 
 {
-    fdcan_fault_t fault;  // 错误码
-    uint8_t tx_err_num;    // 发送错误计数
-    uint8_t rx_err_num;    // 接收错误计数
+    fdcan_fault_t fault;  // fault code
+    uint8_t tx_err_num;    // transmit error count
+    uint8_t rx_err_num;    // receive error count
 } cdc_rx_fdcan_state_s;
 
 typedef struct

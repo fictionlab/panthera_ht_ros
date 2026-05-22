@@ -11,7 +11,7 @@
 #define MEM_INDEX_ID(id) ((id) - 1)    
 
 
-enum motor_type  // 注释掉的暂无力矩修正系数
+enum motor_type  // commented entries: torque adjustment coefficients not available
 {
     null = 0,
     m3536_32,
@@ -41,11 +41,11 @@ enum motor_type  // 注释掉的暂无力矩修正系数
     m5047_36_2,
 
     mGeneral, 
-    mNone,  // 力矩已在电机内部修正
+    mNone,  // Torque already adjusted internally by the motor
 };
 
 
-const std::unordered_map<std::string, motor_type> motor_type2 =  // 注释掉的暂无力矩修正系数
+const std::unordered_map<std::string, motor_type> motor_type2 =  // commented entries: torque adjustment coefficients not available
 {
     {"NULL", motor_type::null},
     {"3536_32", motor_type::m3536_32},
@@ -55,7 +55,7 @@ const std::unordered_map<std::string, motor_type> motor_type2 =  // 注释掉的
     // {"5047_19", motor_type::m5047_19},
     // {"5047_20", motor_type::m5047_20},
     // {"5047_30", motor_type::m5047_30},
-    {"5047_36", motor_type::m5047_36},    // 老款5047_36力矩系数，
+    {"5047_36", motor_type::m5047_36},    // Legacy 5047_36 torque coefficient
     // {"4438_8", motor_type::m4438_08},
     // {"4438_16", motor_type::m4438_16},
     {"4438_30", motor_type::m4438_30},
@@ -71,9 +71,9 @@ const std::unordered_map<std::string, motor_type> motor_type2 =  // 注释掉的
     // {"6057_36", motor_type::m6057_36},
     {"60SG_35", motor_type::m60sg_35},
     {"60BM_35", motor_type::m60bm_35},
-    {"5047_36_2", motor_type::m5047_36_2},  // 新版5047_36（目前的电机都是新款）的力矩系数，建议新算法的5047_36电机都采用此系数
-    {"General", motor_type::mGeneral},  // 遇到暂无力矩修正系数的电机时临时用
-    {"NONE", motor_type::mNone},        // 无修正，已在电机内部修正
+    {"5047_36_2", motor_type::m5047_36_2},  // New 5047_36 torque coefficient (recommended for newer motors)
+    {"General", motor_type::mGeneral},  // Fallback when no torque adjustment coefficient is available
+    {"NONE", motor_type::mNone},        // No adjustment (handled internally by motor)
 };
 
 const std::unordered_map<motor_type, float> motor_tqe_adj = 
@@ -98,9 +98,9 @@ const std::unordered_map<motor_type, float> motor_tqe_adj =
 
 enum pos_vel_convert_type
 {
-    radian_2pi = 0,  // 弧度制
-    angle_360,       // 角度制
-    turns,           // 圈数
+    radian_2pi = 0,  // radians
+    angle_360,       // degrees
+    turns,           // turns
 };
 
 extern const std::unordered_map<std::string, motor_type> motor_type2;
@@ -127,8 +127,8 @@ private:
 
 public:
     motor_pos_vel_tqe_kp_kd_s cmd_int16_5param;
-    int pos_limit_flag = 0;     // 0 表示正常，1 表示超出上限， -1 表示超出下限
-    int tor_limit_flag = 0;     // 0 表示正常，1 表示超出上限
+    int pos_limit_flag = 0;     // 0 means normal, 1 means exceeded upper limit, -1 means exceeded lower limit
+    int tor_limit_flag = 0;     // 0 means normal, 1 means exceeded upper limit
 
     motor(int _motor_num, int _CANport_num, int _CANboard_num, cdc_tr_message_s *_p_cdc_tx_message, int _id_max, MotorParams &motor_params);
     ~motor() {}

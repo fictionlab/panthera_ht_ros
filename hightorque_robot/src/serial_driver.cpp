@@ -5,15 +5,15 @@ serial_driver::serial_driver(std::string *port, uint32_t baudrate, bool _canport
 {
     init_flag = false;
     error_flag = false;
-    _ser.setPort(*port); // 设置打开的串口名称
+    _ser.setPort(*port); // Set the serial port name to open
     _ser.setBaudrate(baudrate);
-    serial::Timeout to = serial::Timeout::simpleTimeout(1000); // 创建timeout
-    _ser.setTimeout(to);                                       // 设置串口的timeout
+    serial::Timeout to = serial::Timeout::simpleTimeout(1000); // create timeout
+    _ser.setTimeout(to);                                       // set serial timeout
 
-    // 打开串口
+    // open serial port
     try
     {
-        _ser.open(); // 打开串口
+        _ser.open(); // open serial port
     }
     catch (const std::exception &e)
     {
@@ -22,7 +22,7 @@ serial_driver::serial_driver(std::string *port, uint32_t baudrate, bool _canport
     }
     if (_ser.isOpen())
     {
-        // std::cout << "\033[1;32mMotor Serial Port initialized.\033[0m" << std::endl; // 成功打开串口，打印信息
+        // std::cout << "\033[1;32mMotor Serial Port initialized.\033[0m" << std::endl; // serial port opened successfully (info)
         init_flag = true;
     }
     else

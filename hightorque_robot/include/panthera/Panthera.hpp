@@ -12,75 +12,76 @@ namespace panthera
 {
 
 /**
- * @brief Panthera机械臂高级控制类
+ * @brief High-level control class for the Panthera robotic arm
  *
- * 继承自hightorque_robot::robot基类，提供机械臂的高级控制接口
- * 包含配置加载、关节状态获取、位置控制、夹爪控制等功能
- * （不包含运动学动力学功能）
+ * Inherits from `hightorque_robot::robot` and provides high-level control
+ * interfaces for the arm. Features include configuration loading, joint
+ * state retrieval, position control, and gripper control. (Does not include
+ * kinematics or dynamics functionality.)
  */
 class Panthera : public hightorque_robot::robot
 {
 public:
     /**
-     * @brief 构造函数
-     * @param config_path 配置文件路径（YAML格式）
+     * @brief Constructor
+     * @param config_path Path to the configuration file (YAML)
      */
     explicit Panthera(const std::string& config_path);
 
     /**
-     * @brief 析构函数
+     * @brief Destructor
      */
     ~Panthera();
 
-    // ==================== 状态获取接口 ====================
+    // ==================== Status Accessors ====================
 
     /**
-     * @brief 获取当前关节位置
-     * @return 关节位置数组（弧度）
+     * @brief Get current joint positions
+     * @return Vector of joint positions (radians)
      */
     std::vector<double> getCurrentPos();
 
     /**
-     * @brief 获取当前关节速度
-     * @return 关节速度数组（弧度/秒）
+     * @brief Get current joint velocities
+     * @return Vector of joint velocities (rad/s)
      */
     std::vector<double> getCurrentVel();
 
     /**
-     * @brief 获取当前关节力矩
-     * @return 关节力矩数组（Nm）
+     * @brief Get current joint torques
+     * @return Vector of joint torques (Nm)
      */
     std::vector<double> getCurrentTorque();
 
     /**
-     * @brief 获取夹爪当前位置
-     * @return 夹爪位置（弧度）
+     * @brief Get current gripper position
+     * @return Gripper position (radians)
      */
     double getCurrentPosGripper();
 
     /**
-     * @brief 获取夹爪当前速度
-     * @return 夹爪速度（弧度/秒）
+     * @brief Get current gripper velocity
+     * @return Gripper velocity (rad/s)
      */
     double getCurrentVelGripper();
 
     /**
-     * @brief 获取夹爪当前力矩
-     * @return 夹爪力矩（Nm）
+     * @brief Get current gripper torque
+     * @return Gripper torque (Nm)
      */
     double getCurrentTorqueGripper();
 
-    // ==================== 控制接口 ====================
+    // ==================== Control Interface ====================
 
     /**
-     * @brief 位置速度最大力矩控制模式
-     * @param pos 目标位置数组（弧度）
-     * @param vel 目标速度数组（弧度/秒）
-     * @param max_torque 最大力矩数组（Nm）
-     * @param is_wait 是否等待到达目标位置
-     * @param tolerance 位置到达容差（弧度）
-     * @param timeout 超时时间（秒）
-     * @return 控制是否成功
+     * @brief Position-velocity with max torque control mode
+     * @param pos Target positions (radians)
+     * @param vel Target velocities (rad/s)
+     * @param max_torque Max torque per joint (Nm)
+     * @param is_wait Whether to wait for motion completion
+     * @param tolerance Position tolerance (radians)
+     * @param timeout Timeout in seconds
+     * @return True on success
      */
     bool posVelMaxTorque(const std::vector<double>& pos,
                          const std::vector<double>& vel,
@@ -90,13 +91,13 @@ public:
                          double timeout = 15.0);
 
     /**
-     * @brief 五参数MIT控制模式
-     * @param pos 目标位置数组（弧度）
-     * @param vel 目标速度数组（弧度/秒）
-     * @param torque 前馈力矩数组（Nm）
-     * @param kp Kp增益数组
-     * @param kd Kd增益数组
-     * @return 控制是否成功
+     * @brief Five-parameter MIT control mode
+     * @param pos Target positions (radians)
+     * @param vel Target velocities (rad/s)
+     * @param torque Feedforward torque (Nm)
+     * @param kp Proportional gains
+     * @param kd Derivative gains
+     * @return True on success
      */
     bool posVelTorqueKpKd(const std::vector<double>& pos,
                           const std::vector<double>& vel,
@@ -104,112 +105,112 @@ public:
                           const std::vector<double>& kp,
                           const std::vector<double>& kd);
 
-    // ==================== 夹爪控制接口 ====================
+    // ==================== Gripper Control Interface ====================
 
     /**
-     * @brief 夹爪控制（位置速度最大力矩模式）
-     * @param pos 目标位置（弧度）
-     * @param vel 目标速度（弧度/秒）
-     * @param max_torque 最大力矩（Nm）
-     * @return 控制是否成功
+     * @brief Gripper control (position-velocity with max torque)
+     * @param pos Target position (radians)
+     * @param vel Target velocity (rad/s)
+     * @param max_torque Max torque (Nm)
+     * @return True on success
      */
     bool gripperControl(double pos, double vel, double max_torque);
 
     /**
-     * @brief 夹爪控制（5参数MIT模式）
-     * @param pos 目标位置（弧度）
-     * @param vel 目标速度（弧度/秒）
-     * @param torque 前馈力矩（Nm）
-     * @param kp Kp增益
-     * @param kd Kd增益
-     * @return 控制是否成功
+     * @brief Gripper control (five-parameter MIT mode)
+     * @param pos Target position (radians)
+     * @param vel Target velocity (rad/s)
+     * @param torque Feedforward torque (Nm)
+     * @param kp Proportional gain
+     * @param kd Derivative gain
+     * @return True on success
      */
     bool gripperControlMIT(double pos, double vel, double torque,
                            double kp, double kd);
 
     /**
-     * @brief 打开夹爪
-     * @param vel 速度（弧度/秒），默认0.5
-     * @param max_torque 最大力矩（Nm），默认0.5
+     * @brief Open gripper
+     * @param vel Velocity (rad/s), default 0.5
+     * @param max_torque Max torque (Nm), default 0.5
      */
     void gripperOpen(double vel = 0.5, double max_torque = 0.5);
 
     /**
-     * @brief 关闭夹爪
-     * @param pos 目标位置（弧度），默认0.0
-     * @param vel 速度（弧度/秒），默认0.5
-     * @param max_torque 最大力矩（Nm），默认0.5
+     * @brief Close gripper
+     * @param pos Target position (radians), default 0.0
+     * @param vel Velocity (rad/s), default 0.5
+     * @param max_torque Max torque (Nm), default 0.5
      */
     void gripperClose(double pos = 0.0, double vel = 0.5, double max_torque = 0.5);
 
-    // ==================== 位置检测接口 ====================
+    // ==================== Position Check Interface ====================
 
     /**
-     * @brief 检查关节位置是否到达目标
-     * @param target_positions 目标位置数组
-     * @param tolerance 容差（弧度）
-     * @param position_errors 输出各关节位置误差
-     * @return 是否全部到达
+     * @brief Check whether joint positions reached targets
+     * @param target_positions Target positions
+     * @param tolerance Tolerance (radians)
+     * @param position_errors Output per-joint position errors
+     * @return True if all reached
      */
     bool checkPositionReached(const std::vector<double>& target_positions,
                               double tolerance,
                               std::vector<double>& position_errors);
 
     /**
-     * @brief 等待位置到达
-     * @param target_positions 目标位置数组
-     * @param tolerance 容差（弧度）
-     * @param timeout 超时时间（秒）
-     * @return 是否成功到达
+     * @brief Wait for positions to be reached
+     * @param target_positions Target positions
+     * @param tolerance Tolerance (radians)
+     * @param timeout Timeout in seconds
+     * @return True if reached
      */
     bool waitForPosition(const std::vector<double>& target_positions,
                          double tolerance = 0.01,
                          double timeout = 15.0);
 
-    // ==================== 工具方法 ====================
+    // ==================== Utility Methods ====================
 
     /**
-     * @brief 获取电机数量（不包含夹爪）
-     * @return 电机数量
+     * @brief Get number of motors (excluding gripper)
+     * @return Number of motors
      */
     int getMotorCount() const { return motor_count_; }
 
     /**
-     * @brief 获取关节限位
-     * @param lower 输出下限
-     * @param upper 输出上限
+     * @brief Get joint limits
+     * @param lower Output lower limits
+     * @param upper Output upper limits
      */
     void getJointLimits(std::vector<double>& lower, std::vector<double>& upper) const;
 
 private:
     /**
-     * @brief 初始化机械臂
-     * @param config_path 配置文件路径
+     * @brief Initialize the robot
+     * @param config_path Path to configuration file
      */
     void initialize(const std::string& config_path);
 
     /**
-     * @brief 加载配置文件
-     * @param config_path 配置文件路径
+     * @brief Load configuration file
+     * @param config_path Path to configuration file
      */
     void loadConfig(const std::string& config_path);
 
     /**
-     * @brief 检查位置是否在关节限位内
-     * @param pos 目标位置数组
-     * @return 是否在限位内
+     * @brief Check whether positions are within joint limits
+     * @param pos Target positions
+     * @return True if within limits
      */
     bool checkJointLimits(const std::vector<double>& pos);
 
-    // ==================== 成员变量 ====================
+    // ==================== Member variables ====================
 
-    YAML::Node config_;                          // 配置文件内容
-    std::string config_dir_;                     // 配置文件目录
-    int motor_count_;                            // 电机数量（不包含夹爪）
-    int gripper_id_;                             // 夹爪电机ID
-    std::vector<double> joint_limits_lower_;     // 关节下限
-    std::vector<double> joint_limits_upper_;     // 关节上限
-    std::vector<std::string> joint_names_;       // 关节名称
+    YAML::Node config_;                          // Configuration content
+    std::string config_dir_;                     // Configuration directory
+    int motor_count_;                            // Number of motors (excluding gripper)
+    int gripper_id_;                             // Gripper motor ID
+    std::vector<double> joint_limits_lower_;     // Joint lower limits
+    std::vector<double> joint_limits_upper_;     // Joint upper limits
+    std::vector<std::string> joint_names_;       // Joint names
 };
 
 } // namespace panthera

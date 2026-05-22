@@ -520,7 +520,7 @@ void motor::reset()
 
 
 /**
- * @brief 仅发送查询电机状态指令
+ * @brief Send a query for motor state only
  */
 void motor::send_state_cmd()
 {
@@ -554,7 +554,7 @@ void motor::fresh_data(uint8_t mode, uint8_t fault, int16_t position, int16_t ve
 
     if(pos_limit_enable)
     {
-        // 判断是否超过电机限制角度
+        // Check whether motor position exceeds configured limits
         if(data.position > pos_upper)
         {
             ROS_ERROR("Motor %d exceed position upper limit.", id);
@@ -569,7 +569,7 @@ void motor::fresh_data(uint8_t mode, uint8_t fault, int16_t position, int16_t ve
     
     if(tor_limit_enable)
     {
-        // 判断是否超过电机扭矩限制
+        // Check whether motor torque exceeds configured limits
         if(data.torque > tor_upper)
         {
             ROS_ERROR("Motor %d exceed torque upper limit.", id);

@@ -9,7 +9,7 @@
 namespace panthera
 {
 
-// ==================== 构造函数和析构函数 ====================
+// ==================== Constructors and destructors ====================
 
 Panthera::Panthera(const std::string& config_path)
     : hightorque_robot::robot(config_path), motor_count_(0), gripper_id_(0)
@@ -21,14 +21,14 @@ Panthera::~Panthera()
 {
 }
 
-// ==================== 初始化方法 ====================
+// ==================== Initialization methods ====================
 
 void Panthera::initialize(const std::string& config_path)
 {
-    // 加载配置文件
+    // Load configuration file
     loadConfig(config_path);
 
-    // 保存配置文件目录
+    // Save configuration file directory
     size_t last_slash = config_path.find_last_of("/\\");
     if (last_slash != std::string::npos) {
         config_dir_ = config_path.substr(0, last_slash);
@@ -36,21 +36,21 @@ void Panthera::initialize(const std::string& config_path)
         config_dir_ = ".";
     }
 
-    // 注意：父类构造函数已经在构造函数初始化列表中调用，会自动调用 init_robot
+    // Note: the base class constructor is called in the initializer list and will invoke init_robot
 
-    // 获取电机数量（不包含夹爪）
+    // Get motor count (excluding gripper)
     motor_count_ = Motors.size() - 1;
     gripper_id_ = Motors.size();
 
-    std::cout << "初始化机械臂..." << std::endl;
-    std::cout << "发现 " << motor_count_ << " 个电机" << std::endl;
+    std::cout << "Initializing Panthera arm..." << std::endl;
+    std::cout << "Found " << motor_count_ << " motors" << std::endl;
 
     if (motor_count_ == 0) {
-        std::cerr << "未发现电机。请检查您的配置和连接。" << std::endl;
+        std::cerr << "No motors found. Please check your configuration and connections." << std::endl;
         return;
     }
 
-    // 打印电机信息
+    // Print motor information
     for (size_t i = 0; i < Motors.size(); ++i) {
         std::cout << "Motor " << i << ": "
                   << "ID=" << Motors[i]->get_motor_id() << ", "
@@ -63,15 +63,15 @@ void Panthera::loadConfig(const std::string& config_path)
 {
     try {
         config_ = YAML::LoadFile(config_path);
-        std::cout << "配置文件加载成功: " << config_path << std::endl;
+        std::cout << "Configuration file loaded: " << config_path << std::endl;
 
-        // 读取关节限位
+        // Read joint limits
         if (config_["robot"] && config_["robot"]["joint_limits"]) {
             auto limits = config_["robot"]["joint_limits"];
             joint_limits_lower_ = limits["lower"].as<std::vector<double>>();
             joint_limits_upper_ = limits["upper"].as<std::vector<double>>();
 
-            std::cout << "关节限位加载成功: lower=[";
+            std::cout << "Joint limits loaded: lower=[";
             for (size_t i = 0; i < joint_limits_lower_.size(); ++i) {
                 std::cout << joint_limits_lower_[i];
                 if (i < joint_limits_lower_.size() - 1) std::cout << ", ";
@@ -83,16 +83,16 @@ void Panthera::loadConfig(const std::string& config_path)
             }
             std::cout << "]" << std::endl;
         } else {
-            std::cerr << "警告: 配置文件中未找到joint_limits" << std::endl;
+            std::cerr << "Warning: 'joint_limits' not found in configuration file" << std::endl;
         }
 
-        // 读取关节名称
+        // Read joint names
         if (config_["kinematics"] && config_["kinematics"]["joint_names"]) {
             joint_names_ = config_["kinematics"]["joint_names"].as<std::vector<std::string>>();
         }
 
     } catch (const YAML::Exception& e) {
-        std::cerr << "配置文件加载失败: " << e.what() << std::endl;
+        std::cerr << "Failed to load configuration file: " << e.what() << std::endl;
         throw;
     }
 }
@@ -100,11 +100,11 @@ void Panthera::loadConfig(const std::string& config_path)
 bool Panthera::checkJointLimits(const std::vector<double>& pos)
 {
     if (joint_limits_lower_.empty() || joint_limits_upper_.empty()) {
-        return true; // 如果没有配置限位，直接通过
+        return true; // No joint limits configured -> pass
     }
 
     if (pos.size() > joint_limits_lower_.size()) {
-        std::cerr << "错误: 位置数组大小超出关节限位配置数" << std::endl;
+        std::cerr << "Error: position array size exceeds joint limits configuration" << std::endl;
         return false;
     }
 
@@ -120,22 +120,22 @@ bool Panthera::checkJointLimits(const std::vector<double>& pos)
 
     if (!all_in_range) {
         std::cout << "\n" << std::string(60, '=') << std::endl;
-        std::cout << "警告：检测到目标位置超出关节限位范围！" << std::endl;
-        std::cout << "目标位置: [";
+        std::cout << "Warning: target position exceeds joint limits!" << std::endl;
+        std::cout << "Target positions: [";
         for (size_t i = 0; i < pos.size(); ++i) {
             std::cout << pos[i];
             if (i < pos.size() - 1) std::cout << ", ";
         }
         std::cout << "]" << std::endl;
 
-        std::cout << "限位下限: [";
+        std::cout << "Limits lower: [";
         for (size_t i = 0; i < joint_limits_lower_.size(); ++i) {
             std::cout << joint_limits_lower_[i];
             if (i < joint_limits_lower_.size() - 1) std::cout << ", ";
         }
         std::cout << "]" << std::endl;
 
-        std::cout << "限位上限: [";
+        std::cout << "Limits upper: [";
         for (size_t i = 0; i < joint_limits_upper_.size(); ++i) {
             std::cout << joint_limits_upper_[i];
             if (i < joint_limits_upper_.size() - 1) std::cout << ", ";
@@ -143,11 +143,11 @@ bool Panthera::checkJointLimits(const std::vector<double>& pos)
         std::cout << "]" << std::endl;
 
         for (int idx : out_indices) {
-            std::cout << "  关节" << (idx + 1) << ": " << pos[idx]
-                      << " 不在 [" << joint_limits_lower_[idx]
-                      << ", " << joint_limits_upper_[idx] << "] 范围内" << std::endl;
+            std::cout << "  Joint " << (idx + 1) << ": " << pos[idx]
+                      << " not in [" << joint_limits_lower_[idx]
+                      << ", " << joint_limits_upper_[idx] << "]" << std::endl;
         }
-        std::cout << "控制指令已被拒绝，保护机械臂安全" << std::endl;
+        std::cout << "Command rejected to protect the robot" << std::endl;
         std::cout << std::string(60, '=') << "\n" << std::endl;
         return false;
     }
@@ -155,7 +155,7 @@ bool Panthera::checkJointLimits(const std::vector<double>& pos)
     return true;
 }
 
-// ==================== 状态获取接口 ====================
+// ==================== Status Accessors ====================
 
 std::vector<double> Panthera::getCurrentPos()
 {
@@ -205,7 +205,7 @@ double Panthera::getCurrentTorqueGripper()
     return state->torque;
 }
 
-// ==================== 控制接口 ====================
+// ==================== Control Interface ====================
 
 bool Panthera::posVelMaxTorque(const std::vector<double>& pos,
                                 const std::vector<double>& vel,
@@ -214,19 +214,19 @@ bool Panthera::posVelMaxTorque(const std::vector<double>& pos,
                                 double tolerance,
                                 double timeout)
 {
-    // 检查参数长度
+    // Check parameter lengths
     if (pos.size() != motor_count_ || vel.size() != motor_count_ ||
         max_torque.size() != motor_count_) {
-        std::cerr << "错误: 关节参数长度必须为 " << motor_count_ << std::endl;
+        std::cerr << "Error: joint parameter length must be " << motor_count_ << std::endl;
         return false;
     }
 
-    // 检查关节限位
+    // Check joint limits
     if (!checkJointLimits(pos)) {
         return false;
     }
 
-    // 控制关节（除了夹爪电机）
+    // Control joints (excluding gripper motor)
     for (int i = 0; i < motor_count_; ++i) {
         Motors[i]->pos_vel_MAXtqe(pos[i], vel[i], max_torque[i]);
     }
@@ -245,20 +245,20 @@ bool Panthera::posVelTorqueKpKd(const std::vector<double>& pos,
                                  const std::vector<double>& kp,
                                  const std::vector<double>& kd)
 {
-    // 检查参数长度
+    // Check parameter lengths
     if (pos.size() != motor_count_ || vel.size() != motor_count_ ||
         torque.size() != motor_count_ || kp.size() != motor_count_ ||
         kd.size() != motor_count_) {
-        std::cerr << "错误: 关节参数长度必须为 " << motor_count_ << std::endl;
+        std::cerr << "Error: joint parameter length must be " << motor_count_ << std::endl;
         return false;
     }
 
-    // 检查关节限位
+    // Check joint limits
     if (!checkJointLimits(pos)) {
         return false;
     }
 
-    // 控制关节（除了夹爪电机）
+    // Control joints (excluding gripper motor)
     for (int i = 0; i < motor_count_; ++i) {
         Motors[i]->pos_vel_tqe_kp_kd(pos[i], vel[i], torque[i], kp[i], kd[i]);
     }
@@ -267,7 +267,7 @@ bool Panthera::posVelTorqueKpKd(const std::vector<double>& pos,
     return true;
 }
 
-// ==================== 夹爪控制接口 ====================
+// ==================== Gripper Control Interface ====================
 
 bool Panthera::gripperControl(double pos, double vel, double max_torque)
 {
@@ -294,7 +294,7 @@ void Panthera::gripperClose(double pos, double vel, double max_torque)
     gripperControl(pos, vel, max_torque);
 }
 
-// ==================== 位置检测接口 ====================
+// ==================== Position Check Interface ====================
 
 bool Panthera::checkPositionReached(const std::vector<double>& target_positions,
                                      double tolerance,
@@ -307,7 +307,7 @@ bool Panthera::checkPositionReached(const std::vector<double>& target_positions,
     send_get_motor_state_cmd();
     motor_send_cmd();
 
-    // 检查前N个关节（不包含夹爪）
+    // Check the first N joints (excluding gripper)
     for (int i = 0; i < motor_count_; ++i) {
         auto state = Motors[i]->get_current_motor_state();
         double error = std::abs(state->position - target_positions[i]);
@@ -344,7 +344,7 @@ bool Panthera::waitForPosition(const std::vector<double>& target_positions,
     }
 }
 
-// ==================== 工具方法 ====================
+// ==================== Utility Methods ====================
 
 void Panthera::getJointLimits(std::vector<double>& lower, std::vector<double>& upper) const
 {
