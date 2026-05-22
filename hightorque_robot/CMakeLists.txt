@@ -13,10 +13,9 @@ set(VERSION_MINOR 4)
 set(VERSION_PATCH 7)
 set(PROJECT_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
-add_subdirectory(third_part/lcm)
 add_subdirectory(third_part/serial_cmake)
 
-# find_package(lcm REQUIRED)
+find_package(lcm REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 find_library(SERIALPORT_LIBRARY serialport)
