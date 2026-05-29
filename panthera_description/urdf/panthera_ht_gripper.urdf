@@ -2,12 +2,12 @@
  <!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
       Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
       For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
- <robot name="Panthera-HT_description">
+<robot name="leo">
   <mujoco>
     <compiler meshdir="../meshes/" balanceinertia="true" discardvisual="false" />
   </mujoco>
 
-   <link name="base_link">
+   <link name="panthera_base_link">
      <inertial>
        <origin xyz="5.789e-05 -0.00015938 0.02298649" rpy="0 0 0" />
        <mass value="0.62922454" />
@@ -53,7 +53,7 @@
    </link>
    <joint name="joint1" type="revolute">
      <origin xyz="0 0 0.0584" rpy="0 0 0" />
-     <parent link="base_link" />
+     <parent link="panthera_base_link" />
      <child link="link1" />
      <axis xyz="0 0 1" />
      <limit lower="-2.4" upper="2.4" effort="21" velocity="4.2" />
