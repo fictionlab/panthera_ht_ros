@@ -1,4 +1,3 @@
-import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
@@ -35,7 +34,7 @@ def generate_launch_description():
 
     rviz_arg = DeclareLaunchArgument(
         'rviz',
-        default_value='true',
+        default_value='false',
         description='Start RViz'
     )
 
@@ -59,7 +58,7 @@ def generate_launch_description():
     # ============================================
     # 2. MoveIt Config
     # ============================================
-    moveit_config = MoveItConfigsBuilder("panthera_ht_description", package_name="panthera_moveit").to_moveit_configs()
+    moveit_config = MoveItConfigsBuilder("panthera_ht", package_name="panthera_moveit").to_moveit_configs()
 
     # For real hardware, use system time, not simulation time
     move_group_configuration = {
