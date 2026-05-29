@@ -67,7 +67,7 @@ public:
         this->declare_parameter<std::vector<double>>("max_torque",
             {21.0, 36.0, 36.0, 21.0, 10.0, 10.0});
         this->declare_parameter<std::string>("urdf_file", "");
-        this->declare_parameter<std::string>("base_link", "base_link");
+        this->declare_parameter<std::string>("base_link", "panthera_base_link");
         this->declare_parameter<std::string>("tip_link", "link6");
 
         std::string config_file = this->get_parameter("config_file").as_string();
@@ -93,7 +93,7 @@ public:
 
         // ==================== Publishers ====================
 
-        joint_states_pub_ = this->create_publisher<JointStateMsg>("joint_states_single", 10);
+        joint_states_pub_ = this->create_publisher<JointStateMsg>("joint_states", 10);
         arm_status_pub_ = this->create_publisher<ArmStatusMsg>("arm_status", 10);
         end_pose_pub_ = this->create_publisher<EndPoseEulerMsg>("end_pose_euler", 10);
 
@@ -166,7 +166,7 @@ public:
             std::bind(&ArmControlNode::publishStatus, this));
 
         RCLCPP_INFO(this->get_logger(), "=== Panthera Arm Control Node Started ===");
-        RCLCPP_INFO(this->get_logger(), "Publishers: joint_states_single, arm_status, end_pose_euler");
+        RCLCPP_INFO(this->get_logger(), "Publishers: joint_states, arm_status, end_pose_euler");
         RCLCPP_INFO(this->get_logger(), "Subscribers: arm_joint_cmd, gripper_cmd, enable_flag, pos_cmd");
         RCLCPP_INFO(this->get_logger(), "Services: move_to_joint, move_to_pose, gripper_control, enable_srv, go_zero_srv, stop_srv, reset_srv, gripper_srv");
     }
@@ -713,10 +713,10 @@ private:
             robot_->motor_send_cmd();
         }
 
-        // 1. Publish joint_states_single
+        // 1. Publish joint_states
         JointStateMsg joint_msg;
         joint_msg.header.stamp = now;
-        joint_msg.header.frame_id = "base_link";
+        joint_msg.header.frame_id = "panthera_base_link";
         joint_msg.name = joint_names_;
 
         std::vector<double> positions, velocities, torques;
@@ -745,7 +745,7 @@ private:
         // 2. Publish arm_status
         ArmStatusMsg status_msg;
         status_msg.header.stamp = now;
-        status_msg.header.frame_id = "base_link";
+        status_msg.header.frame_id = "panthera_base_link";
         status_msg.arm_enabled = arm_enabled_.load();
 
         if (is_moving_) {
@@ -780,7 +780,7 @@ private:
         if (kdl_ready_) {
             EndPoseEulerMsg pose_msg;
             pose_msg.header.stamp = now;
-            pose_msg.header.frame_id = "base_link";
+            pose_msg.header.frame_id = "panthera_base_link";
 
             if (computeFK(positions, pose_msg.x, pose_msg.y, pose_msg.z,
                           pose_msg.roll, pose_msg.pitch, pose_msg.yaw)) {
