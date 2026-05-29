@@ -97,7 +97,6 @@
             </joint>
 
             <!-- Right Gripper Finger (mimics left finger, not directly controlled) -->
-            <!-- Mimic joint: only state interfaces, NO command interface -->
             <joint name="R_finger_joint">
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
