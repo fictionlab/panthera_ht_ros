@@ -1,6 +1,6 @@
-import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -12,6 +12,7 @@ def generate_launch_description():
     # Declare arguments
     config_file = LaunchConfiguration('config_file')
     control_mode = LaunchConfiguration('control_mode')
+    launch_robot_state_publisher = LaunchConfiguration('launch_robot_state_publisher')
 
     # Get package paths
     panthera_moveit_path = FindPackageShare('panthera_moveit')
@@ -55,7 +56,8 @@ def generate_launch_description():
         parameters=[{
             'robot_description': robot_description_content,
             'use_sim_time': False
-        }]
+        }],
+        condition=IfCondition(launch_robot_state_publisher)
     )
 
     # Controller Manager
@@ -125,6 +127,11 @@ def generate_launch_description():
             'control_mode',
             default_value='position_velocity',
             description='Control mode: position_velocity, pd_control, or full_control'
+        ),
+        DeclareLaunchArgument(
+            'launch_robot_state_publisher',
+            default_value='false',
+            description='Whether to start robot_state_publisher'
         ),
         robot_state_publisher,
         controller_manager,
