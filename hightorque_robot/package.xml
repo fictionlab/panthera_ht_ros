@@ -9,8 +9,8 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>libserialport</depend>
-  <depend>lcm</depend>
+  <depend>libserialport-dev</depend>
+  <depend>liblcm-dev</depend>
   <depend>yaml-cpp</depend>
   <depend>panthera_ht_description_with_finger</depend>
 
