@@ -12,7 +12,6 @@
   <depend>libserialport-dev</depend>
   <depend>liblcm-dev</depend>
   <depend>yaml-cpp</depend>
-  <depend>panthera_ht_description_with_finger</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
