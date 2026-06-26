@@ -47,12 +47,11 @@ source install/setup.bash
 ros2 launch panthera_moveit hardware_moveit.launch.py
 ```
 
-To visualize MoveIt in RViz, you can clone this repository on your local machine and run:
+To visualize MoveIt in RViz, you can build the package on your local machine and run:
 
 ```bash
-git clone https://github.com/fictionlab/panthera_ht_ros
-source /opt/ros/<your_ros_distro>/setup.bash
-rviz2 -d panthera_ht_ros/panthera_moveit/config/moveit.rviz
+source install/setup.bash
+ros2 launch panthera_moveit rviz.launch.py
 ```
 
 ### Direct SDK-based arm control
@@ -61,3 +60,13 @@ rviz2 -d panthera_ht_ros/panthera_moveit/config/moveit.rviz
 source install/setup.bash
 ros2 launch panthera_arm_control arm_control.launch.py
 ```
+
+You can optionally launch joystick teleop together with arm control:
+
+```bash
+source install/setup.bash
+ros2 launch panthera_arm_control arm_control.launch.py launch_joy_teleop:=true
+```
+
+By default the teleop node subscribes to the `/joy` topic, so you need to publish data to it
+(for example with [joy_linux node](https://index.ros.org/p/joy_linux/)).

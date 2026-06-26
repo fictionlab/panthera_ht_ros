@@ -35,8 +35,16 @@ ament_target_dependencies(arm_control_node
 )
 target_link_libraries(arm_control_node hightorque_robot::hightorque_robot)
 
+add_executable(arm_joy_teleop_node src/arm_joy_teleop_node.cpp)
+ament_target_dependencies(arm_joy_teleop_node
+  rclcpp
+  panthera_interfaces
+  sensor_msgs
+)
+
 install(TARGETS
   arm_control_node
+  arm_joy_teleop_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -1,5 +1,7 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.conditions import IfCondition
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -26,6 +28,8 @@ def generate_launch_description():
                               description='Status publish rate in Hz'),
         DeclareLaunchArgument('max_velocity', default_value='0.5',
                               description='Max joint velocity in rad/s'),
+        DeclareLaunchArgument('launch_joy_teleop', default_value='false',
+                      description='Include joy_teleop.launch.py alongside arm_control_node'),
 
         Node(
             package='panthera_arm_control',
@@ -39,5 +43,16 @@ def generate_launch_description():
                 'max_velocity': LaunchConfiguration('max_velocity'),
                 'max_torque': [21.0, 36.0, 36.0, 21.0, 10.0, 10.0],
             }],
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution([
+                    FindPackageShare('panthera_arm_control'),
+                    'launch',
+                    'joy_teleop.launch.py',
+                ])
+            ),
+            condition=IfCondition(LaunchConfiguration('launch_joy_teleop')),
         ),
     ])

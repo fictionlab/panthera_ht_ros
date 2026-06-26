@@ -93,26 +93,26 @@ public:
 
         // ==================== Publishers ====================
 
-        joint_states_pub_ = this->create_publisher<JointStateMsg>("joint_states", 10);
-        arm_status_pub_ = this->create_publisher<ArmStatusMsg>("arm_status", 10);
-        end_pose_pub_ = this->create_publisher<EndPoseEulerMsg>("end_pose_euler", 10);
+        joint_states_pub_ = this->create_publisher<JointStateMsg>("joint_states", 1);
+        arm_status_pub_ = this->create_publisher<ArmStatusMsg>("arm_status", 1);
+        end_pose_pub_ = this->create_publisher<EndPoseEulerMsg>("end_pose_euler", 1);
 
         // ==================== Subscribers ====================
 
         arm_joint_sub_ = this->create_subscription<ArmJointMsg>(
-            "arm_joint_cmd", 10,
+            "arm_joint_cmd", 1,
             std::bind(&ArmControlNode::armJointCallback, this, std::placeholders::_1));
 
         gripper_sub_ = this->create_subscription<BoolMsg>(
-            "gripper_cmd", 10,
+            "gripper_cmd", 1,
             std::bind(&ArmControlNode::gripperCallback, this, std::placeholders::_1));
 
         enable_flag_sub_ = this->create_subscription<BoolMsg>(
-            "enable_flag", 10,
+            "enable_flag", 1,
             std::bind(&ArmControlNode::enableFlagCallback, this, std::placeholders::_1));
 
         pos_cmd_sub_ = this->create_subscription<PosCmdMsg>(
-            "pos_cmd", 10,
+            "pos_cmd", 1,
             std::bind(&ArmControlNode::posCmdCallback, this, std::placeholders::_1));
 
         // ==================== Services ====================
