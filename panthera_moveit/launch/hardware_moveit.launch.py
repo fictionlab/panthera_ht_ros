@@ -1,6 +1,5 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -30,12 +29,6 @@ def generate_launch_description():
         'control_mode',
         default_value='position_velocity',
         description='Control mode: position_velocity, pd_control, or full_control'
-    )
-
-    rviz_arg = DeclareLaunchArgument(
-        'rviz',
-        default_value='false',
-        description='Start RViz'
     )
 
     # ============================================
@@ -73,9 +66,6 @@ def generate_launch_description():
         "use_sim_time": False,  # CRITICAL: Use system time for real hardware
     }
 
-    # RViz also needs the full moveit_config (kinematics.yaml, joint_limits.yaml, etc.)
-    rviz_params = [moveit_config.to_dict(), {"use_sim_time": False}]
-
     move_group_params = [
         moveit_config.to_dict(),
         move_group_configuration,
@@ -91,30 +81,9 @@ def generate_launch_description():
         parameters=move_group_params,
     )
 
-    # ============================================
-    # 4. RViz Node - simplified
-    # ============================================
-    rviz_config_file = PathJoinSubstitution([
-        panthera_moveit_path,
-        'config',
-        'moveit.rviz'
-    ])
-
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen",
-        arguments=["-d", rviz_config_file],
-        parameters=rviz_params,
-        condition=IfCondition(LaunchConfiguration('rviz'))
-    )
-
     return LaunchDescription([
         config_file_arg,
         control_mode_arg,
-        rviz_arg,
         hardware_launch,
         move_group_node,
-        rviz_node,
     ])
