@@ -2,6 +2,9 @@
 
 This meta package contains the ROS 2 packages used to control the Panthera HT robot arm and gripper.
 
+This is a simplified version of the existing repository providing basic functionalities to Panthera-HT robotic arm.
+For a full version visit the [HighTorque-Robotics' original repository](https://github.com/HighTorque-Robotics/Panthera-HT_ROS2).
+
 ## What each package does
 
 - `hightorque_robot` contains the low-level SDK wrapper.
@@ -16,6 +19,12 @@ This meta package contains the ROS 2 packages used to control the Panthera HT ro
 - ROS 2 Jazzy
 
 ## Build
+
+Make sure that you are using the newest packages:
+
+```bash
+sudo apt update && sudo apt upgrade
+```
 
 From the workspace root:
 
@@ -36,6 +45,14 @@ Launch the hardware stack and MoveIt from `panthera_moveit`:
 ```bash
 source install/setup.bash
 ros2 launch panthera_moveit hardware_moveit.launch.py
+```
+
+To visualize MoveIt in RViz, you can clone this repository on your local machine and run:
+
+```bash
+git clone https://github.com/fictionlab/panthera_ht_ros
+source /opt/ros/<your_ros_distro>/setup.bash
+rviz2 -d panthera_ht_ros/panthera_moveit/config/moveit.rviz
 ```
 
 ### Direct SDK-based arm control
