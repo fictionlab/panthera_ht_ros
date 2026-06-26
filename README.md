@@ -1,21 +1,10 @@
-# Panthera HT ROS Workspace
+# panthera_ht_ros
 
 This meta package contains the ROS 2 packages used to control the Panthera HT robot arm and gripper.
 
-## Workspace layout
-
-```
-panthera_ht_ros/
-  ├── hightorque_robot/       # Low-level motor SDK, examples, and shared robot code
-  ├── panthera_arm_control/   # SDK-driven arm control node and launch file
-  ├── panthera_description/   # Robot URDF/xacro and mesh-based description
-  ├── panthera_interfaces/    # Custom ROS 2 messages and services
-  └── panthera_moveit/        # MoveIt + ros2_control integration, launch, config, and hardware plugin
-```
-
 ## What each package does
 
-- `hightorque_robot` contains the low-level SDK wrapper and example programs.
+- `hightorque_robot` contains the low-level SDK wrapper.
 - `panthera_description` provides the robot description used by ROS tooling and visualization.
 - `panthera_interfaces` defines the custom messages and services used by the arm control node.
 - `panthera_arm_control` provides direct SDK-based control without MoveIt.
