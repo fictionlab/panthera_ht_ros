@@ -172,6 +172,16 @@ private:
         return previous + alpha * (input - previous);
     }
 
+    double getNormalizedTrigger(const JoyMsg & joy, int axis_index, bool initialized) const
+    {
+        double raw = getAxisValue(joy, axis_index);
+        if (trigger_mode_ == "signed" && !initialized) {
+            // Keep untouched signed triggers at released state.
+            raw = 1.0;
+        }
+        return applyDeadzone(triggerToUnit(raw), trigger_deadzone_);
+    }
+
     // Converts trigger axis value to 0..1.
     // Signed mode: released=1, pressed=-1.
     // Unsigned mode: released=0, pressed=1.
@@ -202,6 +212,14 @@ private:
     void joyCallback(const JoyMsg::SharedPtr msg)
     {
         std::lock_guard<std::mutex> lock(joy_mutex_);
+        if (trigger_mode_ == "signed") {
+            if (!trigger_up_initialized_ && getAxisValue(*msg, axis_z_up_) != 0.0) {
+                trigger_up_initialized_ = true;
+            }
+            if (!trigger_down_initialized_ && getAxisValue(*msg, axis_z_down_) != 0.0) {
+                trigger_down_initialized_ = true;
+            }
+        }
         last_joy_ = *msg;
         joy_received_ = true;
     }
@@ -233,9 +251,13 @@ private:
         }
 
         JoyMsg joy;
+        bool trigger_up_initialized = false;
+        bool trigger_down_initialized = false;
         {
             std::lock_guard<std::mutex> lock(joy_mutex_);
             joy = last_joy_;
+            trigger_up_initialized = trigger_up_initialized_;
+            trigger_down_initialized = trigger_down_initialized_;
         }
 
         const bool world_deadman_pressed = getButtonValue(joy, deadman_button_);
@@ -261,8 +283,8 @@ private:
         const double pitch_in = applyDeadzone(getAxisValue(joy, axis_pitch_), deadzone_);
         const double yaw_in = applyDeadzone(getAxisValue(joy, axis_yaw_), deadzone_);
 
-        const double z_up = applyDeadzone(triggerToUnit(getAxisValue(joy, axis_z_up_)), trigger_deadzone_);
-        const double z_down = applyDeadzone(triggerToUnit(getAxisValue(joy, axis_z_down_)), trigger_deadzone_);
+        const double z_up = getNormalizedTrigger(joy, axis_z_up_, trigger_up_initialized);
+        const double z_down = getNormalizedTrigger(joy, axis_z_down_, trigger_down_initialized);
         const double z_in = applyDeadzone(z_up - z_down, deadzone_);
 
         const bool open_gripper = getButtonValue(joy, gripper_open_button_);
@@ -431,6 +453,8 @@ private:
     bool home_button_prev_{false};
     bool gripper_open_prev_{false};
     bool gripper_close_prev_{false};
+    bool trigger_up_initialized_{false};
+    bool trigger_down_initialized_{false};
 
     double filt_x_{0.0};
     double filt_y_{0.0};
