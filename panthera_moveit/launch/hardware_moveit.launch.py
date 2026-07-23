@@ -55,9 +55,9 @@ def generate_launch_description():
 
     # For real hardware, use system time, not simulation time
     move_group_configuration = {
-        "publish_robot_description_semantic": True,
+        "publish_robot_description_semantic": False,
         "allow_trajectory_execution": True,
-        "publish_robot_description": True,
+        "publish_robot_description": False,
         "publish_planning_scene": True,
         "publish_geometry_updates": True,
         "publish_state_updates": True,
